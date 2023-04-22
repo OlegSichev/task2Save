@@ -6,9 +6,12 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import static java.awt.FileDialog.SAVE;
+
 public class Main {
 
-    static List<String> files = new ArrayList<>();
+    static ArrayList<String> files = new ArrayList<>();
+    static StringBuilder SB = new StringBuilder();
 
     public static void main(String[] args) {
         GameProgress gameProgress = new GameProgress(50, 8, 1, 1.2);
@@ -19,7 +22,7 @@ public class Main {
         saveGame("D://javaHomeworksTemp/Games/savegames/save2.dat", gameProgress2);
         saveGame("D://javaHomeworksTemp/Games/savegames/save3.dat", gameProgress3);
 
-        zipFiles("D://javaHomeworksTemp/Games/savegames/saves.zip", files);
+        zipFiles(files, "D://javaHomeworksTemp/Games/savegames/saves.zip");
 
         deleteFiles(files);
     }
@@ -36,23 +39,42 @@ public class Main {
 
     }
 
-    public static void zipFiles(String archiveAddress, List<String> pathsZip){
-        for (int i = 0; i < pathsZip.size(); i++) {
-            String path = pathsZip.get(i);
-            try (ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(archiveAddress));
-                 FileInputStream fis = new FileInputStream(path)) {
-
-                ZipEntry entry = new ZipEntry(path);
-                zout.putNextEntry(entry);
+    public static void zipFiles(ArrayList<String> list, String zipName){
+        try(ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(SAVE + zipName))){
+            for(String s : list){
+                FileInputStream fis = new FileInputStream(SAVE + s);
+                zos.putNextEntry(new ZipEntry(s));
                 byte[] buffer = new byte[fis.available()];
-                fis.read(buffer);
-                zout.write(buffer);
-                zout.closeEntry();
-            } catch (Exception ex) {
-                System.out.println(ex.getMessage());
-            }
+                int a;
+                if ((a = fis.read(buffer)) != -1) {
+                    zos.write(buffer, 0, a);
+                    SB.append(s).append(" - файл успешно записан в архив\n");
+                }
+                fis.close();
+                zos.closeEntry();
+                }
+            } catch (IOException e){
+            e.printStackTrace();
         }
     }
+
+//    public static void zipFiles(String archiveAddress, List<String> pathsZip){
+//        for (int i = 0; i < pathsZip.size(); i++) {
+//            String path = pathsZip.get(i);
+//            try (ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(archiveAddress));
+//                 FileInputStream fis = new FileInputStream(path)) {
+//
+//                ZipEntry entry = new ZipEntry(path);
+//                zout.putNextEntry(entry);
+//                byte[] buffer = new byte[fis.available()];
+//                fis.read(buffer);
+//                zout.write(buffer);
+//                zout.closeEntry();
+//            } catch (Exception ex) {
+//                System.out.println(ex.getMessage());
+//            }
+//        }
+//    }
 
     public static void deleteFiles(List<String> files){
         for (int i = 0; i < files.size(); i++) {
