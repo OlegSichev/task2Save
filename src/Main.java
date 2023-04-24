@@ -12,24 +12,27 @@ public class Main {
 
     static ArrayList<String> files = new ArrayList<>();
     static StringBuilder SB = new StringBuilder();
+    static final String workPath = "D://javaHomeworksTemp/Games/";
 
     public static void main(String[] args) {
         GameProgress gameProgress = new GameProgress(50, 8, 1, 1.2);
         GameProgress gameProgress2 = new GameProgress(100, 2, 89, 5.5);
         GameProgress gameProgress3 = new GameProgress(74, 4, 20, 3.0);
 
-        saveGame("D://javaHomeworksTemp/Games/savegames/save1.dat", gameProgress);
-        saveGame("D://javaHomeworksTemp/Games/savegames/save2.dat", gameProgress2);
-        saveGame("D://javaHomeworksTemp/Games/savegames/save3.dat", gameProgress3);
+        saveGame("save1.dat", gameProgress);
+        saveGame("save2.dat", gameProgress2);
+        saveGame("save3.dat", gameProgress3);
 
-        zipFiles(files, "D://javaHomeworksTemp/Games/savegames/saves.zip");
+        zipFiles(files, "saves.zip");
 
         deleteFiles(files);
+
+        System.out.println("Успешно завершено!");
     }
 
     public static void saveGame(String path, GameProgress gameProgress){
         files.add(path);
-        try (FileOutputStream fos = new FileOutputStream(path);
+        try (FileOutputStream fos = new FileOutputStream(workPath + path);
         ObjectOutputStream oos = new ObjectOutputStream(fos)) {
             oos.writeObject(gameProgress);
         } catch (Exception ex){
@@ -40,9 +43,9 @@ public class Main {
     }
 
     public static void zipFiles(ArrayList<String> list, String zipName){
-        try(ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(SAVE + zipName))){
+        try(ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(workPath + zipName))){
             for(String s : list){
-                FileInputStream fis = new FileInputStream(SAVE + s);
+                FileInputStream fis = new FileInputStream(workPath + s);
                 zos.putNextEntry(new ZipEntry(s));
                 byte[] buffer = new byte[fis.available()];
                 int a;
@@ -53,6 +56,7 @@ public class Main {
                 fis.close();
                 zos.closeEntry();
                 }
+            deleteFiles(list);
             } catch (IOException e){
             e.printStackTrace();
         }
@@ -77,9 +81,9 @@ public class Main {
 //    }
 
     public static void deleteFiles(List<String> files){
-        for (int i = 0; i < files.size(); i++) {
+        for (String temp : files) {
             try {
-                Files.delete(Path.of(files.get(i)));
+                Files.delete(Path.of(workPath + temp));
             }
             catch (IOException e) {
                 e.printStackTrace();
