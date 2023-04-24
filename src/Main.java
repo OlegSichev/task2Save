@@ -56,7 +56,7 @@ public class Main {
                 fis.close();
                 zos.closeEntry();
                 }
-            deleteFiles(list);
+            //deleteFiles(list);
             } catch (IOException e){
             e.printStackTrace();
         }
@@ -80,7 +80,7 @@ public class Main {
 //        }
 //    }
 
-    public static void deleteFiles(List<String> files){
+    public static void deleteFiles(List <String> files){
         for (String temp : files) {
             try {
                 Files.delete(Path.of(workPath + temp));
